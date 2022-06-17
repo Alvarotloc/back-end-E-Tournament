@@ -83,7 +83,9 @@ const actualizarEvento = async (objEvento) => {
 
   if (resultado.length > 0) {
     const eventosExistentes = await comprobarExistenEventos(fecha);
-    if(resultado[0].fecha === fecha){
+    if(eventosExistentes.length > 0 && resultado[0].fecha !== fecha){
+      return { error: "Solo puede haber un evento" };
+    }
       return new Promise((callback) => {
         db.collection("eTournament").updateOne(
           { _id: ObjectId(_id) },
@@ -98,10 +100,6 @@ const actualizarEvento = async (objEvento) => {
           }
         );
       });
-    }else if(eventosExistentes.length > 0) {
-      return { error: "Solo puede haber un evento" };
-    }
-
   }
 };
 

@@ -2,10 +2,10 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import {
-    leerEventos,
-    crearEvento,
-    borrarEvento,
-    actualizarEvento,
+  leerEventos,
+  crearEvento,
+  borrarEvento,
+  actualizarEvento,
 } from "./crud.js";
 
 dotenv.config();
@@ -14,20 +14,22 @@ const servidor = express();
 
 servidor.use(express.json());
 
-const whiteList = [ //Creamos la lista blanca de urls que vamos a admitir desde el backend
-  process.env.FRONTEND_URL,
+const whiteList = [
+  //Creamos la lista blanca de urls que vamos a admitir desde el backend
+  process.env.FRONTEND_URL_CALENDAR,
+  process.env.FRONTEND_URL_FORM,
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (whiteList.includes(origin)) { //Si la url de la request está en la lista blanca, permitimos la request
+    if (whiteList.includes(origin)) {
+      //Si la url de la request está en la lista blanca, permitimos la request
       callback(null, true);
     } else {
       callback(new Error("Error de Cors"));
     }
   },
 };
-
 
 servidor.use(cors(corsOptions));
 
@@ -39,6 +41,10 @@ servidor
   })
   .post(async (req, res) => {
     let eventoCreado = await crearEvento(req.body);
+    if (eventoCreado.error) {
+      res.status(403).send(eventoCreado);
+      return;
+    }
     res.send(eventoCreado);
   })
   .delete(async (req, res) => {
